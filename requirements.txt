@@ -1,0 +1,77 @@
+# Spatial Lab - Requirements
+# Python 3.11+ required
+
+# Core Dependency - RL Framework
+atroposlib>=0.2.1
+
+# AI/ML Providers
+google-generativeai>=0.3.0
+openai>=1.0.0
+anthropic>=0.5.0
+
+# Transformers & Embeddings
+transformers>=4.20.0
+sentence-transformers>=2.2.0
+torch>=2.0.0
+
+# Numerical & Scientific Computing
+numpy>=1.21.0
+scipy>=1.7.0
+pandas>=1.3.0
+
+# Robotics & Path Planning
+networkx>=2.6.0
+shapely>=2.0.0
+
+# Web Framework & API (optional)
+fastapi>=0.95.0
+uvicorn[standard]>=0.20.0
+pydantic>=2.0.0
+
+# Async Utilities
+aiohttp>=3.8.0
+aiofiles>=23.0.0
+asyncio>=3.4.3
+
+# Experiment Tracking
+wandb>=0.12.0
+tensorboard>=2.11.0
+
+# Configuration & Environment
+python-dotenv>=0.19.0
+pyyaml>=6.0
+configparser>=5.3.0
+
+# Logging & Monitoring
+structlog>=23.1.0
+python-json-logger>=2.0.0
+
+# Development & Testing
+pytest>=7.0.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.0.0
+black>=23.0.0
+ruff>=0.1.0
+mypy>=1.0.0
+pylint>=2.15.0
+
+# Visualization (optional)
+matplotlib>=3.5.0
+seaborn>=0.12.0
+plotly>=5.0.0
+
+# Database (optional, for state persistence)
+aiosqlite>=0.17.0
+sqlalchemy>=2.0.0
+
+# HTTP/REST
+requests>=2.28.0
+httpx>=0.24.0
+urllib3>=1.26.0
+
+# Data Processing
+python-dateutil>=2.8.0
+pytz>=2023.3
+
+# Type Checking
+typing-extensions>=4.5.0
