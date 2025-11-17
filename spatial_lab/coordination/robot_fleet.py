@@ -371,9 +371,9 @@ class RobotFleetSimulator:
             robot.path_index >= len(robot.current_path)):
             
             path = await self.path_planner.plan_path(
-                robot.position[:2], 
+                robot.position[:2],
                 target_position[:2],
-                robot.robot_id
+                obstacles=None  # TODO: Add obstacle detection
             )
             
             if path:
@@ -499,9 +499,18 @@ class RobotFleetSimulator:
             return
         
         # Send message through communication system
-        success = await self.communication_system.send_message(
-            robot.robot_id, target_robot_id, message
+        import time
+        from spatial_lab.coordination.communication import RobotMessage, MessageType
+
+        robot_message = RobotMessage(
+            sender_id=robot.robot_id,
+            receiver_id=target_robot_id,
+            message_type=MessageType.COORDINATION,
+            content={"message": message},
+            timestamp=time.time(),
+            priority=1
         )
+        success = await self.communication_system.send_message(robot_message)
         
         if success:
             robot.coordination_events += 1

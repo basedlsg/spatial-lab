@@ -677,17 +677,51 @@ Focus on spatial reasoning, collision avoidance, and efficient coordination."""
     
     async def reset_for_task(self, task):
         """Reset environment for a new task"""
-        # Reset robot positions and states
+        # Reset step counter
         self.step_count = 0
-        # TODO: Implement task-specific reset logic
-        pass
+
+        # Reset robot fleet to initial positions
+        await self.robot_fleet.reset()
+
+        # Update task-specific state
+        if hasattr(task, 'required_items'):
+            # Mark required items as available in warehouse
+            for item_id in task.required_items:
+                if item_id in self.current_items:
+                    self.current_items[item_id]['status'] = 'available'
+
+        logger.info(f"Environment reset for task: {task.task_id if hasattr(task, 'task_id') else 'unknown'}")
     
     async def update_environment_state(self, execution_results: Dict):
         """Update environment state after robot actions"""
         # Update step count
         self.step_count += 1
-        # TODO: Implement environment state updates
-        pass
+
+        # Process results for each robot
+        for robot_id, result in execution_results.items():
+            if not result.get('success', False):
+                continue
+
+            action = result.get('action')
+
+            # Update item locations based on robot actions
+            if action == 'pick_item':
+                item_id = result.get('item_picked')
+                if item_id and item_id in self.current_items:
+                    self.current_items[item_id]['status'] = 'carried'
+                    self.current_items[item_id]['carrier'] = robot_id
+
+            elif action == 'drop_item':
+                item_id = result.get('item_delivered')
+                if item_id and item_id in self.current_items:
+                    self.current_items[item_id]['status'] = 'delivered'
+                    self.current_items[item_id]['carrier'] = None
+                    # Update item position to delivery location
+                    if 'delivery_position' in result:
+                        self.current_items[item_id]['position'] = result['delivery_position']
+
+        # Log environment state update
+        logger.debug(f"Environment state updated at step {self.step_count}")
     
     async def calculate_evaluation_metrics(self, eval_results: List) -> Dict:
         """Calculate evaluation metrics from results"""

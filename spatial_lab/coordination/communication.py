@@ -43,7 +43,7 @@ class RobotCommunicationSystem:
         """Register a robot in the communication system."""
         self.robot_positions[robot_id] = position
         
-    def send_message(self, message: RobotMessage) -> bool:
+    async def send_message(self, message: RobotMessage) -> bool:
         """Send a message between robots."""
         # Check if robots are in communication range
         if self._in_range(message.sender_id, message.receiver_id):

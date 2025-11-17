@@ -21,9 +21,9 @@ class SpatialPathPlanner:
     def __init__(self, grid_resolution: float = 0.1):
         self.grid_resolution = grid_resolution
         
-    def plan_path(
-        self, 
-        start: Tuple[float, float], 
+    async def plan_path(
+        self,
+        start: Tuple[float, float],
         goal: Tuple[float, float],
         obstacles: Optional[List[Tuple[float, float]]] = None
     ) -> List[PathPoint]:
@@ -31,18 +31,18 @@ class SpatialPathPlanner:
         # Simple straight-line path for basic functionality
         if obstacles is None:
             obstacles = []
-            
+
         # Generate waypoints along straight line
         distance = np.sqrt((goal[0] - start[0])**2 + (goal[1] - start[1])**2)
         num_points = max(2, int(distance / self.grid_resolution))
-        
+
         path = []
         for i in range(num_points):
             t = i / (num_points - 1)
             x = start[0] + t * (goal[0] - start[0])
             y = start[1] + t * (goal[1] - start[1])
             path.append(PathPoint(x, y, t))
-            
+
         return path
         
     def calculate_path_length(self, path: List[PathPoint]) -> float:
