@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  spatial-lab:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: spatial-lab
+    volumes:
+      - ./outputs:/app/outputs
+      - ./logs:/app/logs
+      - ./.env:/app/.env
+    environment:
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ATROPOSLIB_API_KEY=${ATROPOSLIB_API_KEY}
+      - WANDB_API_KEY=${WANDB_API_KEY}
+      - WANDB_PROJECT=spatial-lab
+    command: python -m spatial_lab.experiment_runner
+    restart: unless-stopped
+
+  # Optional: Jupyter notebook service
+  notebook:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: spatial-lab-notebook
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./notebooks:/app/notebooks
+      - ./outputs:/app/outputs
+      - ./.env:/app/.env
+    environment:
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    command: jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser --allow-root
+    restart: unless-stopped
