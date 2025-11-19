@@ -1,8 +1,9 @@
 """
-Research validation module for Spatial AI Research Lab.
+Research module for Spatial AI Research Lab.
 
-Provides comprehensive research validation capabilities with proper scientific
-methodology and statistical analysis.
+Includes:
+- Research validation with statistical analysis
+- NL + Code Generation experiment for robot coordination
 """
 
 from .research_validator import (
@@ -12,9 +13,30 @@ from .research_validator import (
     BaselineResult
 )
 
+from .groq_client import GroqClient, GroqConfig, create_groq_client
+from .nl_code_experiment import (
+    NLCodeExperiment,
+    ExperimentResults,
+    ExperimentTrial,
+    RobotState,
+    NeedType,
+    run_quick_test
+)
+
 __all__ = [
+    # Research validator
     'ResearchValidator',
-    'ExperimentalCondition', 
+    'ExperimentalCondition',
     'TrialResult',
-    'BaselineResult'
+    'BaselineResult',
+    # NL + Code experiment
+    'GroqClient',
+    'GroqConfig',
+    'create_groq_client',
+    'NLCodeExperiment',
+    'ExperimentResults',
+    'ExperimentTrial',
+    'RobotState',
+    'NeedType',
+    'run_quick_test'
 ] 
