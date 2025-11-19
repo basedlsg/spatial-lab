@@ -5,15 +5,28 @@ A practical implementation of spatial reasoning using Nous Atropos infrastructur
 Core focus: Warehouse robot coordination and multi-agent spatial reasoning.
 """
 
-__version__ = "0.1.0"
+__version__ = "1.0.0"
 __author__ = "Spatial AI Research Lab"
 
-from .environments import WarehouseSpatialEnvironment
-from .coordination import MultiAgentCoordinator
-from .evaluation import SpatialMetrics
+__all__ = []
 
-__all__ = [
-    "WarehouseSpatialEnvironment",
-    "MultiAgentCoordinator", 
-    "SpatialMetrics"
-] 
+# Import coordination (core functionality - no heavy dependencies)
+try:
+    from .coordination import MultiAgentCoordinator
+    __all__.append("MultiAgentCoordinator")
+except ImportError:
+    MultiAgentCoordinator = None
+
+# Import environments (requires atroposlib)
+try:
+    from .environments import WarehouseSpatialEnvironment
+    __all__.append("WarehouseSpatialEnvironment")
+except ImportError:
+    WarehouseSpatialEnvironment = None
+
+# Import evaluation (may have optional dependencies)
+try:
+    from .evaluation import SpatialMetrics
+    __all__.append("SpatialMetrics")
+except ImportError:
+    SpatialMetrics = None 

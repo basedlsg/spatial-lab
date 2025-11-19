@@ -149,6 +149,9 @@ class RobotFleetSimulator:
         self.robot_radius = 0.5  # meters
         self.collision_threshold = 1.0  # meters
         self.battery_drain_rate = 0.001  # per step
+
+        # Store initial positions for reset
+        self.initial_positions: Dict[str, Tuple[float, float, float]] = {}
         
         # Current warehouse layout
         self.warehouse_layout = None
@@ -181,13 +184,48 @@ class RobotFleetSimulator:
             
             self.robots[robot_id] = robot
             self.robot_positions_history[robot_id] = [position]
-        
+            self.initial_positions[robot_id] = position
+
         # Initialize coordination systems
         # Register robots with communication system
         for robot_id, robot in self.robots.items():
             self.communication_system.register_robot(robot_id, robot.position[:2])
-        
+
         logger.info(f"Initialized {len(self.robots)} robots in warehouse")
+
+    async def reset(self):
+        """Reset all robots to their initial positions and states."""
+        for robot_id, robot in self.robots.items():
+            # Reset position
+            if robot_id in self.initial_positions:
+                robot.position = self.initial_positions[robot_id]
+
+            # Reset operational state
+            robot.status = RobotStatus.IDLE
+            robot.current_task = None
+            robot.carrying_item = None
+            robot.current_load = 0.0
+            robot.assigned_items = []
+
+            # Reset navigation state
+            robot.current_path = []
+            robot.path_index = 0
+            robot.target_position = None
+            robot.stuck_counter = 0
+
+            # Reset battery (optional - keep some drain for realism)
+            robot.battery_level = min(1.0, robot.battery_level + 0.1)
+
+            # Clear pending messages
+            robot.pending_messages = []
+
+            # Update communication system
+            self.communication_system.update_robot_position(robot_id, robot.position[:2])
+
+        # Clear message queue
+        self.communication_system.message_queue = []
+
+        logger.info(f"Reset {len(self.robots)} robots to initial positions")
     
     def _generate_safe_positions(self, num_positions: int) -> List[Tuple[float, float]]:
         """Generate safe starting positions for robots"""
