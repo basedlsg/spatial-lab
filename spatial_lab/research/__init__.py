@@ -6,12 +6,19 @@ Includes:
 - NL + Code Generation experiment for robot coordination
 """
 
-from .research_validator import (
-    ResearchValidator,
-    ExperimentalCondition,
-    TrialResult,
-    BaselineResult
-)
+# Import research validator (requires optional dependencies)
+try:
+    from .research_validator import (
+        ResearchValidator,
+        ExperimentalCondition,
+        TrialResult,
+        BaselineResult
+    )
+except ImportError:
+    ResearchValidator = None
+    ExperimentalCondition = None
+    TrialResult = None
+    BaselineResult = None
 
 from .groq_client import GroqClient, GroqConfig, create_groq_client
 from .nl_code_experiment import (
@@ -24,7 +31,7 @@ from .nl_code_experiment import (
 )
 
 __all__ = [
-    # Research validator
+    # Research validator (may be None if deps missing)
     'ResearchValidator',
     'ExperimentalCondition',
     'TrialResult',
