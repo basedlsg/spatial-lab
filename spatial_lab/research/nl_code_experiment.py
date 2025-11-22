@@ -562,8 +562,13 @@ async def run_quick_test(groq_api_key: str) -> bool:
         if trial.generated_code:
             print(f"\nGenerated Code:\n{trial.generated_code}")
 
+        if trial.failure_reason:
+            print(f"  Failure Reason: {trial.failure_reason}")
+
         return trial.success
 
     except Exception as e:
+        import traceback
         print(f"Quick test failed: {e}")
+        print(f"Traceback:\n{traceback.format_exc()}")
         return False
