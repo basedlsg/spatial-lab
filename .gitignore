@@ -1,4 +1,4 @@
-# AMIEN Research - Git Ignore
+# Spatial Lab - Git Ignore
 
 # ============================================
 # Python
@@ -272,3 +272,17 @@ service-account.json
 *.credentials
 api_keys.txt
 tokens.json
+
+# ============================================
+# Spatial Lab Specific
+# ============================================
+
+# Experiment results (large JSON files)
+# Keep SCIENTIFIC_REPORT.md but ignore raw data
+experiment_results/*.json
+
+# Keep the README in experiment_results
+!experiment_results/README.md
+
+# Claude Code local settings (may contain API keys)
+.claude/settings.local.json

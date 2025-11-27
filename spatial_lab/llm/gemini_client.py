@@ -23,7 +23,7 @@ class GeminiAPIConfig:
     """Configuration for Gemini API client"""
     api_key: str
     base_url: str = "https://generativelanguage.googleapis.com/v1beta"
-    model: str = "gemini-1.5-pro"
+    model: str = "gemini-2.0-flash-exp"  # Updated to working model
     max_tokens: int = 2048
     temperature: float = 0.7
     timeout: int = 30
@@ -155,20 +155,17 @@ class GeminiAPIClient:
         )
         
         prompt += """
-        
-        Respond with a JSON object containing:
-        {
-            "action": "chosen_action_from_available_list",
-            "parameters": {"key": "value"},
-            "reasoning": "detailed spatial reasoning",
-            "confidence": 0.85,
-            "coordination_intent": "how this coordinates with other robots"
-        }
-        """
-        
+
+IMPORTANT: You MUST respond with ONLY a valid JSON object. No markdown, no explanation, no code blocks.
+Your response should be exactly this format:
+{"action": "move_to", "parameters": {"destination": [x, y]}, "reasoning": "your reasoning here", "confidence": 0.85, "coordination_intent": "how this coordinates"}
+
+Choose action from: """ + ", ".join(available_actions) + """
+"""
+
         return await self.spatial_reasoning_completion(
             prompt=prompt,
-            system_prompt=self._get_robot_coordination_system_prompt()
+            system_prompt="You are a robot coordination AI. Always respond with ONLY valid JSON, no other text."
         )
     
     async def analyze_warehouse_layout(

@@ -1,7 +1,7 @@
 """
 LLM Integration Package for Spatial Reasoning
 
-Provides unified access to multiple LLM providers (Llama, Gemini) with intelligent
+Provides unified access to multiple LLM providers (Groq, Gemini, Llama) with intelligent
 routing, load balancing, and spatial reasoning capabilities.
 """
 
@@ -21,6 +21,15 @@ from .gemini_client import (
     test_gemini_api
 )
 
+from .groq_client import (
+    GroqAPIClient,
+    GroqAPIManager,
+    GroqAPIConfig,
+    create_groq_client,
+    test_groq_api,
+    GROQ_MODELS
+)
+
 from .llm_coordinator import (
     LLMCoordinator,
     LLMProvider,
@@ -32,18 +41,26 @@ from .llm_coordinator import (
 __all__ = [
     # Llama API
     "LlamaAPIClient",
-    "LlamaAPIManager", 
+    "LlamaAPIManager",
     "LlamaAPIConfig",
     "create_llama_client",
     "test_llama_api",
-    
+
     # Gemini API
     "GeminiAPIClient",
     "GeminiAPIManager",
-    "GeminiAPIConfig", 
+    "GeminiAPIConfig",
     "create_gemini_client",
     "test_gemini_api",
-    
+
+    # Groq API
+    "GroqAPIClient",
+    "GroqAPIManager",
+    "GroqAPIConfig",
+    "create_groq_client",
+    "test_groq_api",
+    "GROQ_MODELS",
+
     # LLM Coordinator
     "LLMCoordinator",
     "LLMProvider",
