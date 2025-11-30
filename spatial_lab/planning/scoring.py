@@ -47,6 +47,106 @@ class ScoringConfig:
 DEFAULT_SCORING = ScoringConfig()
 
 
+# ============================================================================
+# V3: Mission Context Scoring Configs
+# ============================================================================
+# These are HIDDEN from the LLM. The LLM only sees a natural language
+# "mission brief" and must infer the correct trade-off.
+
+@dataclass
+class MissionContext:
+    """A mission context with hidden scoring function and visible brief."""
+    name: str                    # Internal identifier
+    brief: str                   # What the LLM sees (natural language)
+    scoring_config: ScoringConfig  # Hidden ground truth (LLM never sees this)
+
+    def get_optimal_plan(self, plans: List[Dict[str, Any]]) -> Tuple[str, float]:
+        """Find optimal plan according to this context's hidden scoring."""
+        return find_optimal_plan(plans, self.scoring_config)
+
+
+# Mission Context A: Safety-Critical (Fragile/Hazardous Cargo)
+MISSION_SAFETY_CRITICAL = MissionContext(
+    name="safety_critical",
+    brief="""MISSION BRIEF: HAZARDOUS CARGO TRANSPORT
+
+You are controlling a robot transporting nitroglycerin through the warehouse.
+ANY collision could cause a catastrophic explosion, destroying the facility
+and endangering lives.
+
+Time is NOT a factor - take as long as needed. The ONLY thing that matters
+is avoiding all obstacles with maximum clearance. Even a minor brush against
+a shelf could be fatal.
+
+Choose the path that keeps the cargo safest.""",
+    scoring_config=ScoringConfig(
+        alpha=0.0,    # Length doesn't matter at all
+        beta=5.0,     # Risk is everything
+        min_length_diversity=3.0,
+        min_risk_diversity=0.15,
+        regret_epsilon=0.5,
+    )
+)
+
+# Mission Context B: Time-Critical (Emergency Response)
+MISSION_TIME_CRITICAL = MissionContext(
+    name="time_critical",
+    brief="""MISSION BRIEF: MEDICAL EMERGENCY
+
+A worker has suffered a severe injury in aisle 7. You are transporting
+emergency medical supplies. Every second counts - the patient could die
+if treatment is delayed.
+
+Minor collisions are acceptable - the robot can push through light obstacles
+if needed. What matters is getting there as FAST as possible.
+
+Choose the shortest path. Speed is life.""",
+    scoring_config=ScoringConfig(
+        alpha=1.0,    # Length is critical
+        beta=0.1,     # Risk is almost irrelevant
+        min_length_diversity=3.0,
+        min_risk_diversity=0.15,
+        regret_epsilon=0.5,
+    )
+)
+
+# Mission Context C: Balanced (Standard Logistics)
+MISSION_BALANCED = MissionContext(
+    name="balanced",
+    brief="""MISSION BRIEF: STANDARD DELIVERY
+
+Routine warehouse operation. You are delivering inventory to the shipping
+dock. No special urgency, no hazardous materials.
+
+Balance efficiency with safety - avoid unnecessary detours, but also
+maintain reasonable clearance from obstacles. A typical trade-off.
+
+Choose a sensible path that balances speed and safety.""",
+    scoring_config=ScoringConfig(
+        alpha=0.1,    # Moderate length weight
+        beta=1.5,     # Moderate risk weight
+        min_length_diversity=3.0,
+        min_risk_diversity=0.15,
+        regret_epsilon=0.5,
+    )
+)
+
+# All mission contexts for iteration
+MISSION_CONTEXTS = {
+    "safety_critical": MISSION_SAFETY_CRITICAL,
+    "time_critical": MISSION_TIME_CRITICAL,
+    "balanced": MISSION_BALANCED,
+}
+
+
+def get_mission_context(name: str) -> MissionContext:
+    """Get a mission context by name."""
+    if name not in MISSION_CONTEXTS:
+        raise ValueError(f"Unknown mission context: {name}. "
+                        f"Available: {list(MISSION_CONTEXTS.keys())}")
+    return MISSION_CONTEXTS[name]
+
+
 def compute_J(
     length: float,
     risk_score: float,
